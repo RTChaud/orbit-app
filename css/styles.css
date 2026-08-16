@@ -230,6 +230,10 @@ body {
   z-index: 100;
 }
 
+.modal-overlay[hidden] {
+  display: none;
+}
+
 @media (min-width: 560px) {
   .modal-overlay {
     align-items: center;
