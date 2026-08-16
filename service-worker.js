@@ -17,10 +17,12 @@ const APP_SHELL = [
   "./",
   "./index.html",
   "./css/styles.css",
+  "./js/config.js",
   "./js/app.js",
   "./js/ui.js",
   "./js/storage.js",
   "./js/notifications.js",
+  "./js/push.js",
   "./manifest.json",
 ];
 
@@ -61,4 +63,28 @@ self.addEventListener("notificationclick", (event) => {
       return self.clients.openWindow("./index.html");
     })
   );
+});
+
+// Real push notifications, sent by the Orbit server (see /server) even
+// when this app isn't open. This is what actually survives a locked
+// screen or a fully closed app - the local setTimeout scheduling in
+// js/notifications.js only works while Orbit is running in the foreground.
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (err) {
+    data = {};
+  }
+
+  const title = data.title || "Orbit";
+  const options = {
+    body: data.body || "Reminder from Orbit",
+    icon: "icons/logo.png",
+    badge: "icons/logo.png",
+    tag: data.tag || "orbit-reminder",
+    requireInteraction: true,
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
 });
