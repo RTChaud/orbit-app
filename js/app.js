@@ -5,6 +5,9 @@
  */
 
 (function () {
+  let swRegistration = null;
+  let pushSubscription = null;
+
   function isStandalone() {
     return (
       window.matchMedia("(display-mode: standalone)").matches ||
@@ -23,6 +26,7 @@
 
   function handleDeleteTask(taskId) {
     OrbitNotifications.cancel(taskId);
+    OrbitPush.cancelReminder(taskId);
     OrbitStorage.deleteTask(taskId);
     refreshTaskList();
   }
@@ -72,6 +76,7 @@
 
     if (OrbitNotifications.getPermission() === "granted") {
       OrbitNotifications.schedule(task);
+      OrbitPush.saveReminder(task, pushSubscription);
     }
 
     OrbitUI.closeModal();
@@ -121,6 +126,7 @@
         await OrbitNotifications.requestPermission();
         // Any tasks already saved should now be armed.
         OrbitNotifications.rescheduleAll(OrbitStorage.getTasks());
+        pushSubscription = await OrbitPush.ensureSubscription(swRegistration);
         updateNotificationBanner();
       }
     );
@@ -130,7 +136,12 @@
     if (!("serviceWorker" in navigator)) return;
     try {
       const registration = await navigator.serviceWorker.register("service-worker.js");
+      swRegistration = registration;
       OrbitNotifications.setServiceWorkerRegistration(registration);
+
+      if (OrbitNotifications.getPermission() === "granted") {
+        pushSubscription = await OrbitPush.ensureSubscription(registration);
+      }
     } catch (err) {
       console.warn("Orbit: service worker registration failed", err);
     }
