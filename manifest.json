@@ -1,0 +1,19 @@
+{
+  "name": "Orbit",
+  "short_name": "Orbit",
+  "description": "Personal life-admin: chores, checklists, tasks and reminders.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#12141c",
+  "theme_color": "#12141c",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icons/logo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

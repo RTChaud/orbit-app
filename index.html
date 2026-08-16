@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Orbit</title>
+
+  <!-- PWA setup -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#12141c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Orbit" />
+  <link rel="apple-touch-icon" href="icons/logo.png" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <header class="app-header">
+    <h1 class="app-title">Orbit</h1>
+    <p class="app-subtitle">Life admin, on schedule.</p>
+  </header>
+
+  <main class="app-main">
+
+    <!-- Notification permission banner -->
+    <section id="notification-banner" class="banner" hidden>
+      <p id="notification-banner-text"></p>
+      <button id="notification-banner-btn" class="btn btn-secondary"></button>
+    </section>
+
+    <!-- Task list -->
+    <section class="task-section">
+      <div class="task-section-header">
+        <h2>Your tasks</h2>
+        <button id="add-task-btn" class="btn btn-primary">+ Add task</button>
+      </div>
+
+      <ul id="task-list" class="task-list">
+        <!-- Task items are rendered here by js/ui.js -->
+      </ul>
+
+      <p id="empty-state" class="empty-state">
+        No tasks yet. Tap "Add task" to create your first reminder.
+      </p>
+    </section>
+
+  </main>
+
+  <!-- Add / edit task modal -->
+  <div id="task-modal" class="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <h2 id="modal-title">Add task</h2>
+        <button id="modal-close-btn" class="icon-btn" aria-label="Close">&times;</button>
+      </div>
+
+      <form id="task-form" class="task-form">
+        <label class="field">
+          <span class="field-label">Task name</span>
+          <input type="text" id="task-name" name="task-name" required maxlength="80" placeholder="e.g. Renew car insurance" />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Description</span>
+          <textarea id="task-description" name="task-description" rows="3" maxlength="500" placeholder="Any extra detail (optional)"></textarea>
+        </label>
+
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Date</span>
+            <input type="date" id="task-date" name="task-date" required />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Time</span>
+            <input type="time" id="task-time" name="task-time" required />
+          </label>
+        </div>
+
+        <p id="form-error" class="form-error" hidden></p>
+
+        <div class="modal-actions">
+          <button type="button" id="cancel-task-btn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
