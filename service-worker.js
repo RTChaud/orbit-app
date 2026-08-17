@@ -65,7 +65,7 @@ self.addEventListener("notificationclick", (event) => {
   );
 });
 
-// Real push notifications, sent by the Orbit server (see /server) even
+// Real push notifications, sent by the Orbit worker (see /worker) even
 // when this app isn't open. This is what actually survives a locked
 // screen or a fully closed app - the local setTimeout scheduling in
 // js/notifications.js only works while Orbit is running in the foreground.

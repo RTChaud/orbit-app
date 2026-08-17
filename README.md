@@ -62,12 +62,12 @@ This is the part that trips people up, so it's worth doing exactly:
 ## Real notifications (locked screen / app closed)
 
 The limitations below describe the local-only scheduling this app ships
-with by default. There's now a way around them: `/server` contains a
-small push server that sends real notifications even when Orbit is
-closed. See `server/README.md` for the full setup (it's a bit involved —
-a free Render account, a Postgres database, and a cron job). Until you
-deploy it and set `serverUrl` in `js/config.js`, Orbit falls back to the
-local-only behavior described below.
+with by default. There's now a way around them: `/worker` contains a
+Cloudflare Worker that sends real notifications even when Orbit is
+closed. See `worker/README.md` for the setup — it runs on Cloudflare's
+free plan, which has no trial period or expiry. Until you deploy it and
+set `serverUrl` in `js/config.js`, Orbit falls back to the local-only
+behavior described below.
 
 ## Notification limitations (local-only mode, no server configured)
 
