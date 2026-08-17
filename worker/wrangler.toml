@@ -1,0 +1,16 @@
+name = "orbit-push"
+main = "src/index.js"
+compatibility_date = "2026-05-01"
+
+# Runs the scheduled() handler in src/index.js once a minute to send
+# any reminders that have come due. Cron Triggers are included on the
+# Workers free plan at no extra cost.
+[triggers]
+crons = ["* * * * *"]
+
+# The D1 database. Fill in database_id with the value wrangler prints
+# when you run `npx wrangler d1 create orbit-db` (see README.md step 2).
+[[d1_databases]]
+binding = "DB"
+database_name = "orbit-db"
+database_id = "PASTE_YOUR_DATABASE_ID_HERE"

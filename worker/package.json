@@ -1,0 +1,18 @@
+{
+  "name": "orbit-push-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cloudflare Worker that sends Orbit's reminders as real push notifications.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute orbit-db --remote --file=./schema.sql"
+  },
+  "dependencies": {
+    "@pushforge/builder": "^2.0.5"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
