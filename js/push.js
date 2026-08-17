@@ -2,7 +2,7 @@
  * push.js
  *
  * Client side of real (locked-screen / closed-app) notifications.
- * Talks to the server in /server to:
+ * Talks to the Cloudflare Worker in /worker to:
  *   - subscribe this install of Orbit to push
  *   - tell the server about a reminder (task + due time)
  *   - cancel a reminder if the task is deleted
