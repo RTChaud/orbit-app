@@ -5,8 +5,8 @@
   --border: #2e3341;
   --text: #eceef3;
   --text-muted: #9aa0b4;
-  --accent: #6d8cff;
-  --accent-strong: #4f6ef0;
+  --accent: #ff8c3b;
+  --accent-strong: #e86b1c;
   --danger: #ff6b6b;
   --success: #52c793;
   --radius: 12px;
@@ -38,17 +38,29 @@ body {
   padding: calc(env(safe-area-inset-top) + 20px) 20px 12px;
 }
 
+.home-header {
+  text-align: center;
+}
+
 .home-header .app-title {
   margin: 0;
-  font-size: 1.75rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #ffdd9a, var(--accent) 65%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .home-header .app-subtitle {
-  margin: 4px 0 0;
+  margin: 6px 0 0;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: 1rem;
+  font-family: Georgia, "Times New Roman", ui-serif, serif;
+  font-style: italic;
+  letter-spacing: 0.01em;
 }
 
 .module-header {
@@ -104,6 +116,10 @@ body {
   gap: 10px;
 }
 
+.banner[hidden] {
+  display: none;
+}
+
 .banner p {
   margin: 0;
   font-size: 0.9rem;
@@ -136,6 +152,12 @@ body {
   background: var(--surface-raised);
 }
 
+.tile-icon-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .tile-icon {
   width: 30px;
   height: 30px;
@@ -145,6 +167,14 @@ body {
 .tile-icon svg {
   width: 100%;
   height: 100%;
+}
+
+.tile-icon-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 10px;
+  display: block;
 }
 
 .tile-label {
