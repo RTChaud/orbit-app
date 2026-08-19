@@ -136,11 +136,16 @@
     if (!("serviceWorker" in navigator)) return;
     try {
       const registration = await navigator.serviceWorker.register("service-worker.js");
-      swRegistration = registration;
-      OrbitNotifications.setServiceWorkerRegistration(registration);
+
+      // navigator.serviceWorker.ready resolves only once a worker is fully
+      // active - subscribing before that (e.g. right after register(), on
+      // a first-time install) can silently fail on some browsers.
+      const readyRegistration = await navigator.serviceWorker.ready;
+      swRegistration = readyRegistration;
+      OrbitNotifications.setServiceWorkerRegistration(readyRegistration);
 
       if (OrbitNotifications.getPermission() === "granted") {
-        pushSubscription = await OrbitPush.ensureSubscription(registration);
+        pushSubscription = await OrbitPush.ensureSubscription(readyRegistration);
       }
     } catch (err) {
       console.warn("Orbit: service worker registration failed", err);
@@ -149,6 +154,12 @@
 
   function init() {
     registerServiceWorker();
+
+    // Clear the icon badge (the red "1") set when a reminder fired -
+    // opening Orbit counts as having seen it.
+    if ("clearAppBadge" in navigator) {
+      navigator.clearAppBadge().catch(() => {});
+    }
 
     refreshTaskList();
     OrbitNotifications.rescheduleAll(OrbitStorage.getTasks());
