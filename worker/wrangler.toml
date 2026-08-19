@@ -1,4 +1,4 @@
-name = "orbit-push"
+name = "orbit-worker"
 main = "src/index.js"
 compatibility_date = "2026-05-01"
 
@@ -8,9 +8,11 @@ compatibility_date = "2026-05-01"
 [triggers]
 crons = ["* * * * *"]
 
-# The D1 database. Fill in database_id with the value wrangler prints
-# when you run `npx wrangler d1 create orbit-db` (see README.md step 2).
+# The D1 database.
+# NOTE: database_name must match what you actually called the database in
+# Cloudflare. If you named it something other than "orbit-db", change it
+# here (and in the db:init script in package.json) to match.
 [[d1_databases]]
 binding = "DB"
 database_name = "orbit-db"
-database_id = "PASTE_YOUR_DATABASE_ID_HERE"
+database_id = "a1455c39-8441-4d25-a2e9-a2a302982cc5"
