@@ -7,6 +7,5 @@
  */
 
 const ORBIT_CONFIG = {
-  // e.g. "https://orbit-push.onrender.com"
-  serverUrl: null,
+  serverUrl: "https://orbit-worker.romain-96d.workers.dev",
 };
