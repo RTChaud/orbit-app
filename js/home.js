@@ -27,10 +27,29 @@ const OrbitHome = (() => {
     TILES.forEach((tile) => {
       const btn = document.createElement("button");
       btn.className = "tile";
-      btn.innerHTML = `
-        <span class="tile-icon">${OrbitIcons.get(tile.icon)}</span>
-        <span class="tile-label">${tile.label}</span>
-      `;
+
+      const iconSlot = document.createElement("span");
+      iconSlot.className = "tile-icon-slot";
+
+      // Each module can have its own logo later: icons/<route>.png. If it
+      // doesn't exist yet, this quietly falls back to the line icon -
+      // adding a logo later is just dropping the file in, no code change.
+      const img = document.createElement("img");
+      img.src = `icons/${tile.route}.png`;
+      img.alt = "";
+      img.className = "tile-icon-img";
+      img.addEventListener("error", () => {
+        iconSlot.classList.add("tile-icon");
+        iconSlot.innerHTML = OrbitIcons.get(tile.icon);
+      });
+      iconSlot.appendChild(img);
+
+      const label = document.createElement("span");
+      label.className = "tile-label";
+      label.textContent = tile.label;
+
+      btn.appendChild(iconSlot);
+      btn.appendChild(label);
       btn.addEventListener("click", () => OrbitRouter.navigate(`/${tile.route}`));
       grid.appendChild(btn);
     });

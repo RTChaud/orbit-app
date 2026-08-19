@@ -89,7 +89,7 @@ const OrbitUI = (() => {
     headerEl.className = "home-header";
     headerEl.innerHTML = `
       <h1 class="app-title">Orbit</h1>
-      <p class="app-subtitle">Life admin, on schedule.</p>
+      <p class="app-subtitle">Keep life neatly in orbit</p>
     `;
   }
 
