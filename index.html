@@ -17,83 +17,54 @@
 </head>
 <body>
 
-  <header class="app-header">
-    <h1 class="app-title">Orbit</h1>
-    <p class="app-subtitle">Life admin, on schedule.</p>
-  </header>
+  <!-- Notification permission banner - shown above whichever screen is active -->
+  <section id="notification-banner" class="banner" hidden>
+    <p id="notification-banner-text"></p>
+    <button id="notification-banner-btn" class="btn btn-secondary"></button>
+  </section>
 
-  <main class="app-main">
+  <!-- Repainted by router.js: home grid or a module's back/title/add bar -->
+  <header id="app-header" class="app-header"></header>
 
-    <!-- Notification permission banner -->
-    <section id="notification-banner" class="banner" hidden>
-      <p id="notification-banner-text"></p>
-      <button id="notification-banner-btn" class="btn btn-secondary"></button>
-    </section>
+  <!-- Repainted by router.js with the current screen's content -->
+  <main id="view-root" class="app-main"></main>
 
-    <!-- Task list -->
-    <section class="task-section">
-      <div class="task-section-header">
-        <h2>Your tasks</h2>
-        <button id="add-task-btn" class="btn btn-primary">+ Add task</button>
-      </div>
-
-      <ul id="task-list" class="task-list">
-        <!-- Task items are rendered here by js/ui.js -->
-      </ul>
-
-      <p id="empty-state" class="empty-state">
-        No tasks yet. Tap "Add task" to create your first reminder.
-      </p>
-    </section>
-
-  </main>
-
-  <!-- Add / edit task modal -->
-  <div id="task-modal" class="modal-overlay" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <!-- Generic modal shell - each module fills app-modal-body with its own form -->
+  <div id="app-modal" class="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="app-modal-title">
       <div class="modal-header">
-        <h2 id="modal-title">Add task</h2>
-        <button id="modal-close-btn" class="icon-btn" aria-label="Close">&times;</button>
+        <h2 id="app-modal-title"></h2>
+        <button id="app-modal-close" class="icon-btn" aria-label="Close"></button>
       </div>
-
-      <form id="task-form" class="task-form">
-        <label class="field">
-          <span class="field-label">Task name</span>
-          <input type="text" id="task-name" name="task-name" required maxlength="80" placeholder="e.g. Renew car insurance" />
-        </label>
-
-        <label class="field">
-          <span class="field-label">Description</span>
-          <textarea id="task-description" name="task-description" rows="3" maxlength="500" placeholder="Any extra detail (optional)"></textarea>
-        </label>
-
-        <div class="field-row">
-          <label class="field">
-            <span class="field-label">Date</span>
-            <input type="date" id="task-date" name="task-date" required />
-          </label>
-
-          <label class="field">
-            <span class="field-label">Time</span>
-            <input type="time" id="task-time" name="task-time" required />
-          </label>
-        </div>
-
-        <p id="form-error" class="form-error" hidden></p>
-
-        <div class="modal-actions">
-          <button type="button" id="cancel-task-btn" class="btn btn-secondary">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save task</button>
-        </div>
-      </form>
+      <div id="app-modal-body"></div>
     </div>
   </div>
 
   <script src="js/config.js"></script>
   <script src="js/storage.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/utils.js"></script>
   <script src="js/notifications.js"></script>
   <script src="js/push.js"></script>
+
+  <script src="js/data/items.js"></script>
+  <script src="js/data/shopping.js"></script>
+  <script src="js/data/lists.js"></script>
+  <script src="js/reminders.js"></script>
+
+  <script src="js/router.js"></script>
   <script src="js/ui.js"></script>
+  <script src="js/home.js"></script>
+
+  <script src="js/modules/soon.js"></script>
+  <script src="js/modules/upcoming.js"></script>
+  <script src="js/modules/routines.js"></script>
+  <script src="js/modules/tasks.js"></script>
+  <script src="js/modules/shopping.js"></script>
+  <script src="js/modules/lists.js"></script>
+  <script src="js/modules/calendar.js"></script>
+  <script src="js/modules/waiting.js"></script>
+
   <script src="js/app.js"></script>
 </body>
 </html>
