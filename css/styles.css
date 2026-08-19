@@ -18,6 +18,13 @@
   box-sizing: border-box;
 }
 
+button {
+  -webkit-appearance: none;
+  appearance: none;
+  color: inherit;
+  font-family: inherit;
+}
+
 html, body {
   height: 100%;
 }
@@ -35,7 +42,7 @@ body {
    module's back/title/add bar */
 
 .app-header {
-  padding: calc(env(safe-area-inset-top) + 20px) 20px 12px;
+  padding: calc(env(safe-area-inset-top) + 52px) 20px 22px;
 }
 
 .home-header {
@@ -55,7 +62,7 @@ body {
 }
 
 .home-header .app-subtitle {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   color: var(--text-muted);
   font-size: 1rem;
   font-family: Georgia, "Times New Roman", ui-serif, serif;
