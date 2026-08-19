@@ -12,7 +12,7 @@
  * right time. See README.md.
  */
 
-const CACHE_NAME = "orbit-shell-v2";
+const CACHE_NAME = "orbit-shell-v4";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -86,5 +86,21 @@ self.addEventListener("push", (event) => {
     requireInteraction: true,
   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
+  event.waitUntil(
+    (async () => {
+      await self.registration.showNotification(title, options);
+
+      // App icon badge (the small red "1"). Supported on installed
+      // iOS home-screen apps since iOS 16.4, same as notifications. Not
+      // an accurate unread count - just "something needs your attention" -
+      // it's cleared in app.js as soon as Orbit is opened.
+      if ("setAppBadge" in navigator) {
+        try {
+          await navigator.setAppBadge(1);
+        } catch (err) {
+          // Badging isn't supported everywhere - fine to ignore.
+        }
+      }
+    })()
+  );
 });
