@@ -55,7 +55,7 @@ const OrbitUI = (() => {
   // button. headerEl is cleared and repopulated each navigation.
   function renderModuleHeader(headerEl, title, onAdd) {
     headerEl.innerHTML = "";
-    headerEl.className = "module-header";
+    headerEl.className = "app-header module-header";
 
     const backBtn = document.createElement("button");
     backBtn.className = "icon-btn header-back";
@@ -86,7 +86,7 @@ const OrbitUI = (() => {
 
   function renderHomeHeader(headerEl) {
     headerEl.innerHTML = "";
-    headerEl.className = "home-header";
+    headerEl.className = "app-header home-header";
     headerEl.innerHTML = `
       <h1 class="app-title">Orbit</h1>
       <p class="app-subtitle">Keep life neatly in orbit</p>
