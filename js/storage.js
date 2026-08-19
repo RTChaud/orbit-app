@@ -1,63 +1,33 @@
 /**
  * storage.js
  *
- * Wraps localStorage so the rest of the app never talks to
- * localStorage directly. Swapping this out later (e.g. for
- * IndexedDB, or a backend) only means changing this file.
+ * Generic localStorage helper. Nothing in here is task/item-specific -
+ * that lives in js/data/*.js. Kept as the single place that talks to
+ * localStorage so it's easy to swap later (IndexedDB, a synced backend).
  */
 
-const OrbitStorage = (() => {
-  const STORAGE_KEY = "orbit.tasks";
-
-  function getTasks() {
+const OrbitDB = (() => {
+  function readKey(key, fallback) {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
     } catch (err) {
-      console.error("Orbit: failed to read tasks from storage", err);
-      return [];
+      console.error(`Orbit: failed to read "${key}" from storage`, err);
+      return fallback;
     }
   }
 
-  function saveTasks(tasks) {
+  function writeKey(key, value) {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+      localStorage.setItem(key, JSON.stringify(value));
     } catch (err) {
-      console.error("Orbit: failed to save tasks to storage", err);
+      console.error(`Orbit: failed to write "${key}" to storage`, err);
     }
   }
 
-  function addTask(task) {
-    const tasks = getTasks();
-    tasks.push(task);
-    saveTasks(tasks);
-    return task;
+  function generateId(prefix) {
+    return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   }
 
-  function deleteTask(taskId) {
-    const tasks = getTasks().filter((t) => t.id !== taskId);
-    saveTasks(tasks);
-  }
-
-  function updateTask(taskId, updates) {
-    const tasks = getTasks();
-    const index = tasks.findIndex((t) => t.id === taskId);
-    if (index === -1) return null;
-    tasks[index] = { ...tasks[index], ...updates };
-    saveTasks(tasks);
-    return tasks[index];
-  }
-
-  function generateId() {
-    return `task-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  }
-
-  return {
-    getTasks,
-    saveTasks,
-    addTask,
-    deleteTask,
-    updateTask,
-    generateId,
-  };
+  return { readKey, writeKey, generateId };
 })();

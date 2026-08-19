@@ -1,12 +1,21 @@
 /**
  * app.js
  *
- * Entry point. Wires together storage, notifications and ui.
+ * Entry point. Registers the service worker, drives the notification
+ * permission banner, subscribes to push, and starts the router. Task
+ * creation/rendering now lives in js/modules/*.js - this file only
+ * handles app-wide startup, exactly as before.
  */
 
 (function () {
   let swRegistration = null;
   let pushSubscription = null;
+
+  // Exposes the current push subscription to reminders.js without a
+  // circular dependency between the two files.
+  window.OrbitRuntime = {
+    getPushSubscription: () => pushSubscription,
+  };
 
   function isStandalone() {
     return (
@@ -17,70 +26,6 @@
 
   function isIOS() {
     return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
-  }
-
-  function refreshTaskList() {
-    const tasks = OrbitStorage.getTasks();
-    OrbitUI.renderTasks(tasks, handleDeleteTask);
-  }
-
-  function handleDeleteTask(taskId) {
-    OrbitNotifications.cancel(taskId);
-    OrbitPush.cancelReminder(taskId);
-    OrbitStorage.deleteTask(taskId);
-    refreshTaskList();
-  }
-
-  function buildTimestamp(dateStr, timeStr) {
-    // Combine the <input type="date"> and <input type="time"> values into
-    // a single local-time Date. Using the constructor directly (rather
-    // than Date.parse) avoids UTC-vs-local ambiguity.
-    const [year, month, day] = dateStr.split("-").map(Number);
-    const [hour, minute] = timeStr.split(":").map(Number);
-    return new Date(year, month - 1, day, hour, minute, 0, 0);
-  }
-
-  function handleFormSubmit(event) {
-    event.preventDefault();
-
-    const values = OrbitUI.getFormValues();
-
-    if (!values.name) {
-      OrbitUI.showFormError("Please enter a task name.");
-      return;
-    }
-    if (!values.date || !values.time) {
-      OrbitUI.showFormError("Please choose a date and time.");
-      return;
-    }
-
-    const when = buildTimestamp(values.date, values.time);
-
-    if (when.getTime() <= Date.now()) {
-      OrbitUI.showFormError("Please choose a date and time in the future.");
-      return;
-    }
-
-    const task = {
-      id: OrbitStorage.generateId(),
-      name: values.name,
-      description: values.description,
-      date: values.date,
-      time: values.time,
-      timestamp: when.getTime(),
-      notified: false,
-      createdAt: Date.now(),
-    };
-
-    OrbitStorage.addTask(task);
-
-    if (OrbitNotifications.getPermission() === "granted") {
-      OrbitNotifications.schedule(task);
-      OrbitPush.saveReminder(task, pushSubscription);
-    }
-
-    OrbitUI.closeModal();
-    refreshTaskList();
   }
 
   function updateNotificationBanner() {
@@ -124,8 +69,7 @@
       "Enable notifications",
       async () => {
         await OrbitNotifications.requestPermission();
-        // Any tasks already saved should now be armed.
-        OrbitNotifications.rescheduleAll(OrbitStorage.getTasks());
+        OrbitReminders.rescheduleAll();
         pushSubscription = await OrbitPush.ensureSubscription(swRegistration);
         updateNotificationBanner();
       }
@@ -135,7 +79,7 @@
   async function registerServiceWorker() {
     if (!("serviceWorker" in navigator)) return;
     try {
-      const registration = await navigator.serviceWorker.register("service-worker.js");
+      await navigator.serviceWorker.register("service-worker.js");
 
       // navigator.serviceWorker.ready resolves only once a worker is fully
       // active - subscribing before that (e.g. right after register(), on
@@ -161,26 +105,16 @@
       navigator.clearAppBadge().catch(() => {});
     }
 
-    refreshTaskList();
-    OrbitNotifications.rescheduleAll(OrbitStorage.getTasks());
+    OrbitReminders.rescheduleAll();
     updateNotificationBanner();
 
-    // Called by notifications.js when a scheduled reminder actually fires.
-    window.onOrbitTaskNotified = function (taskId) {
-      OrbitStorage.updateTask(taskId, { notified: true });
-      refreshTaskList();
+    // Called by notifications.js when a local (foreground) timer fires.
+    window.onOrbitTaskNotified = function (itemId) {
+      OrbitItems.update(itemId, { notified: true });
+      OrbitRouter.renderCurrent();
     };
 
-    OrbitUI.el.bannerBtn.addEventListener("click", () => {}); // handler set dynamically in showBanner
-
-    document.getElementById("add-task-btn").addEventListener("click", OrbitUI.openModal);
-    document.getElementById("modal-close-btn").addEventListener("click", OrbitUI.closeModal);
-    document.getElementById("cancel-task-btn").addEventListener("click", OrbitUI.closeModal);
-    document.getElementById("task-form").addEventListener("submit", handleFormSubmit);
-
-    OrbitUI.el.modal.addEventListener("click", (event) => {
-      if (event.target === OrbitUI.el.modal) OrbitUI.closeModal();
-    });
+    OrbitRouter.init(document.getElementById("view-root"), document.getElementById("app-header"));
   }
 
   document.addEventListener("DOMContentLoaded", init);
