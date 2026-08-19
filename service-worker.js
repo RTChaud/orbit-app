@@ -12,7 +12,7 @@
  * right time. See README.md.
  */
 
-const CACHE_NAME = "orbit-shell-v1";
+const CACHE_NAME = "orbit-shell-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
