@@ -105,6 +105,14 @@ export default {
       return json({ ok: true });
     }
 
+    // TEMPORARY: visit this once in Safari to generate your VAPID keys,
+    // then ask Claude for a revised index.js with this removed.
+    // Runs entirely inside this worker - no terminal or npm needed.
+    if (url.pathname === "/generate-vapid-keys" && request.method === "GET") {
+      const keys = await generateVapidKeys();
+      return json(keys);
+    }
+
     return json({ error: "Not found" }, 404);
   },
 
@@ -159,4 +167,31 @@ async function sendDueReminders(env) {
       .bind(reminder.id)
       .run();
   }
+}
+
+// --- Temporary VAPID key generator (see /generate-vapid-keys above) ---
+
+async function generateVapidKeys() {
+  const keyPair = await crypto.subtle.generateKey(
+    { name: "ECDSA", namedCurve: "P-256" },
+    true,
+    ["sign", "verify"]
+  );
+
+  const rawPublic = await crypto.subtle.exportKey("raw", keyPair.publicKey);
+  const publicKey = base64UrlEncode(new Uint8Array(rawPublic));
+  const privateJwk = await crypto.subtle.exportKey("jwk", keyPair.privateKey);
+
+  return {
+    publicKey,
+    privateJwk,
+    instructions:
+      "Save 'publicKey' as the VAPID_PUBLIC_KEY secret. Save the whole 'privateJwk' object (as one line of JSON) as the VAPID_PRIVATE_JWK secret.",
+  };
+}
+
+function base64UrlEncode(bytes) {
+  let binary = "";
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
