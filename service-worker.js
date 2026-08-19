@@ -12,7 +12,7 @@
  * right time. See README.md.
  */
 
-const CACHE_NAME = "orbit-shell-v8";
+const CACHE_NAME = "orbit-shell-v10";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -64,7 +64,20 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+
+      return fetch(event.request).then((response) => {
+        // Cache anything that loaded successfully (e.g. module logo
+        // images) so it's instant next time, instead of only ever
+        // serving the files listed in APP_SHELL from cache.
+        if (event.request.method === "GET" && response.ok && response.type === "basic") {
+          const responseCopy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseCopy));
+        }
+        return response;
+      });
+    })
   );
 });
 
