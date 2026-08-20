@@ -79,10 +79,21 @@ const OrbitUtils = (() => {
     return { timestamp: date.getTime(), hasTime };
   }
 
+  // Plain "1h 14m" / "45m" - unlike formatRelativeDuration, this has no
+  // "in"/"overdue" wording, for showing a stored duration as-is.
+  function formatMinutesDuration(totalMinutes) {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    if (hours === 0) return `${minutes}m`;
+    if (minutes === 0) return `${hours}h`;
+    return `${hours}h ${minutes}m`;
+  }
+
   return {
     pad,
     startOfDay,
     formatRelativeDuration,
+    formatMinutesDuration,
     formatDateTime,
     formatTime,
     formatDayHeader,

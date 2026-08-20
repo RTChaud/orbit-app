@@ -174,6 +174,48 @@ const OrbitUI = (() => {
     return wrap;
   }
 
+  // Wires a live-filtered dropdown under a text input. getMatches(query)
+  // returns an array of {name, ...} objects; onSelect(match) is called
+  // when one is tapped. The dropdown sits in normal document flow right
+  // after the input (not absolutely positioned), so it can't get clipped
+  // or misaligned inside the modal.
+  function wireAutocomplete(input, getMatches, onSelect) {
+    const list = document.createElement("ul");
+    list.className = "autocomplete-list";
+    list.hidden = true;
+    input.insertAdjacentElement("afterend", list);
+
+    function render() {
+      const matches = document.activeElement === input ? getMatches(input.value) : [];
+      list.innerHTML = "";
+      if (matches.length === 0) {
+        list.hidden = true;
+        return;
+      }
+      matches.forEach((match) => {
+        const li = document.createElement("li");
+        li.textContent = match.name;
+        // Prevents the input's blur (which would hide the list) from
+        // firing before the click is registered.
+        li.addEventListener("mousedown", (event) => event.preventDefault());
+        li.addEventListener("click", () => {
+          onSelect(match);
+          list.hidden = true;
+        });
+        list.appendChild(li);
+      });
+      list.hidden = false;
+    }
+
+    input.addEventListener("input", render);
+    input.addEventListener("focus", render);
+    input.addEventListener("blur", () => {
+      setTimeout(() => {
+        list.hidden = true;
+      }, 120);
+    });
+  }
+
   return {
     el,
     showBanner,
@@ -185,5 +227,6 @@ const OrbitUI = (() => {
     buildItemRow,
     buildEmptyHint,
     buildField,
+    wireAutocomplete,
   };
 })();
