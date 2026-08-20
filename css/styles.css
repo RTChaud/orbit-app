@@ -306,6 +306,15 @@ body {
   margin: 0;
 }
 
+.section-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin: 24px 0 12px;
+}
+
 /* Soon's duration presets */
 
 .preset-row {
@@ -490,6 +499,27 @@ body {
 .field-row {
   display: flex;
   gap: 12px;
+}
+
+.autocomplete-list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 4px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.autocomplete-list li {
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.92rem;
+}
+
+.autocomplete-list li:active {
+  background: var(--surface);
 }
 
 input, textarea, select {
