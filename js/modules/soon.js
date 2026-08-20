@@ -53,19 +53,10 @@ const OrbitSoonModule = (() => {
     nameInput.required = true;
     nameInput.maxLength = 80;
 
-    const hoursInput = document.createElement("input");
-    hoursInput.type = "number";
-    hoursInput.min = "0";
-    hoursInput.max = "23";
-    hoursInput.inputMode = "numeric";
-    hoursInput.value = "0";
-
-    const minutesInput = document.createElement("input");
-    minutesInput.type = "number";
-    minutesInput.min = "0";
-    minutesInput.max = "59";
-    minutesInput.inputMode = "numeric";
-    minutesInput.value = "15";
+    const durationInput = document.createElement("input");
+    durationInput.type = "time";
+    durationInput.value = "00:00";
+    durationInput.required = true;
 
     const presetRow = document.createElement("div");
     presetRow.className = "preset-row";
@@ -80,8 +71,7 @@ const OrbitSoonModule = (() => {
       btn.className = "preset-btn";
       btn.textContent = label;
       btn.addEventListener("click", () => {
-        hoursInput.value = h;
-        minutesInput.value = m;
+        durationInput.value = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
       });
       presetRow.appendChild(btn);
     });
@@ -106,16 +96,14 @@ const OrbitSoonModule = (() => {
 
     form.appendChild(OrbitUI.buildField("Task name", nameInput));
     form.appendChild(presetRow);
-    form.appendChild(OrbitUI.buildField("Hours", hoursInput));
-    form.appendChild(OrbitUI.buildField("Minutes", minutesInput));
+    form.appendChild(OrbitUI.buildField("Duration", durationInput));
     form.appendChild(error);
     form.appendChild(actions);
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       const name = nameInput.value.trim();
-      const hours = parseInt(hoursInput.value, 10) || 0;
-      const minutes = parseInt(minutesInput.value, 10) || 0;
+      const [hours, minutes] = durationInput.value.split(":").map((n) => parseInt(n, 10) || 0);
 
       if (!name) {
         error.textContent = "Please enter a task name.";
