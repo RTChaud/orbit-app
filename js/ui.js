@@ -53,7 +53,7 @@ const OrbitUI = (() => {
 
   // Builds a standard module header: back chevron, title, optional add
   // button. headerEl is cleared and repopulated each navigation.
-  function renderModuleHeader(headerEl, title, onAdd) {
+  function renderModuleHeader(headerEl, title, onAdd, onSuggestions) {
     headerEl.innerHTML = "";
     headerEl.className = "app-header module-header";
 
@@ -69,6 +69,15 @@ const OrbitUI = (() => {
 
     headerEl.appendChild(backBtn);
     headerEl.appendChild(titleEl);
+
+    if (onSuggestions) {
+      const suggestionsBtn = document.createElement("button");
+      suggestionsBtn.className = "icon-btn header-settings";
+      suggestionsBtn.setAttribute("aria-label", "Previously used");
+      suggestionsBtn.innerHTML = OrbitIcons.get("settings");
+      suggestionsBtn.addEventListener("click", onSuggestions);
+      headerEl.appendChild(suggestionsBtn);
+    }
 
     if (onAdd) {
       const addBtn = document.createElement("button");
@@ -183,7 +192,17 @@ const OrbitUI = (() => {
     const list = document.createElement("ul");
     list.className = "autocomplete-list";
     list.hidden = true;
-    input.insertAdjacentElement("afterend", list);
+
+    // Insert after the whole label/field wrapper, not just the raw
+    // input - the input is nested inside a <label class="field">, and a
+    // browser forwards taps anywhere inside a label to its control,
+    // which was fighting with taps on the dropdown itself.
+    const anchor = input.closest(".field") || input;
+    anchor.insertAdjacentElement("afterend", list);
+
+    function preventBlur(event) {
+      event.preventDefault();
+    }
 
     function render() {
       const matches = document.activeElement === input ? getMatches(input.value) : [];
@@ -195,9 +214,11 @@ const OrbitUI = (() => {
       matches.forEach((match) => {
         const li = document.createElement("li");
         li.textContent = match.name;
-        // Prevents the input's blur (which would hide the list) from
-        // firing before the click is registered.
-        li.addEventListener("mousedown", (event) => event.preventDefault());
+        // Keeps the input focused (so blur doesn't hide the list) right
+        // up until the tap actually lands - mousedown alone isn't always
+        // enough on iOS Safari, so touchstart is covered too.
+        li.addEventListener("mousedown", preventBlur);
+        li.addEventListener("touchstart", preventBlur, { passive: false });
         li.addEventListener("click", () => {
           onSelect(match);
           list.hidden = true;
@@ -212,7 +233,7 @@ const OrbitUI = (() => {
     input.addEventListener("blur", () => {
       setTimeout(() => {
         list.hidden = true;
-      }, 120);
+      }, 200);
     });
   }
 
