@@ -224,11 +224,11 @@ const OrbitUI = (() => {
       matches.forEach((match) => {
         const li = document.createElement("li");
         li.textContent = match.name;
-        // Keeps the input focused (so blur doesn't hide the list) right
-        // up until the tap actually lands - mousedown alone isn't always
-        // enough on iOS Safari, so touchstart is covered too.
+        // Keeps the input focused (so blur doesn't hide the list before
+        // the tap lands). Deliberately mousedown only - preventDefault()
+        // on touchstart can suppress the click event that follows it on
+        // iOS Safari, which was silently breaking selection entirely.
         li.addEventListener("mousedown", preventBlur);
-        li.addEventListener("touchstart", preventBlur, { passive: false });
         li.addEventListener("click", () => {
           onSelect(match);
           list.hidden = true;
