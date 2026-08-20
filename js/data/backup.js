@@ -2,9 +2,10 @@
  * data/backup.js
  *
  * Export bundles every piece of Orbit's data (items, shopping lists,
- * custom lists) into one JSON object. Import always fully replaces what's
- * there - no merging - since the whole point is "get back to exactly
- * this state" after a reinstall wipes local storage.
+ * custom lists, Soon/Shopping suggestions) into one JSON object. Import
+ * always fully replaces what's there - no merging - since the whole
+ * point is "get back to exactly this state" after a reinstall wipes
+ * local storage.
  */
 
 const OrbitBackup = (() => {
@@ -12,16 +13,20 @@ const OrbitBackup = (() => {
     items: "orbit.items",
     shoppingLists: "orbit.shopping.lists",
     lists: "orbit.lists",
+    soonSuggestions: "orbit.suggestions.soon",
+    shoppingSuggestions: "orbit.suggestions.shopping",
   };
 
   function exportData() {
     return {
       app: "orbit",
-      version: 1,
+      version: 2,
       exportedAt: new Date().toISOString(),
       items: OrbitDB.readKey(KEYS.items, []),
       shoppingLists: OrbitDB.readKey(KEYS.shoppingLists, []),
       lists: OrbitDB.readKey(KEYS.lists, []),
+      soonSuggestions: OrbitDB.readKey(KEYS.soonSuggestions, []),
+      shoppingSuggestions: OrbitDB.readKey(KEYS.shoppingSuggestions, []),
     };
   }
 
@@ -34,6 +39,11 @@ const OrbitBackup = (() => {
     OrbitDB.writeKey(KEYS.items, Array.isArray(data.items) ? data.items : []);
     OrbitDB.writeKey(KEYS.shoppingLists, Array.isArray(data.shoppingLists) ? data.shoppingLists : []);
     OrbitDB.writeKey(KEYS.lists, Array.isArray(data.lists) ? data.lists : []);
+    OrbitDB.writeKey(KEYS.soonSuggestions, Array.isArray(data.soonSuggestions) ? data.soonSuggestions : []);
+    OrbitDB.writeKey(
+      KEYS.shoppingSuggestions,
+      Array.isArray(data.shoppingSuggestions) ? data.shoppingSuggestions : []
+    );
   }
 
   return { exportData, importData };
