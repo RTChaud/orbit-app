@@ -51,14 +51,14 @@ const OrbitSuggestions = (() => {
     );
   }
 
-  // Every match, alphabetical - all of them on an empty query (so
-  // tapping into the field shows everything right away), narrowed as
-  // you type. Capped at 8 so the dropdown doesn't get unwieldy.
+  // Matches for the autocomplete dropdown, alphabetical - nothing shown
+  // until there's actual typed text, so it doesn't clutter an empty field.
   function search(kind, query) {
     const q = query.trim().toLowerCase();
-    const all = sortedAll(kind);
-    const matches = q ? all.filter((s) => s.name.toLowerCase().includes(q)) : all;
-    return matches.slice(0, 8);
+    if (!q) return [];
+    return sortedAll(kind)
+      .filter((s) => s.name.toLowerCase().includes(q))
+      .slice(0, 8);
   }
 
   // Full alphabetical list, for the "previously used" management section.
