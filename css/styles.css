@@ -49,6 +49,17 @@ body {
   text-align: center;
 }
 
+.home-header-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.home-header-titles {
+  flex: 1;
+  min-width: 0;
+}
+
 .home-header .app-title {
   margin: 0;
   font-size: 2rem;
@@ -85,7 +96,8 @@ body {
 }
 
 .header-back,
-.header-add {
+.header-add,
+.header-settings {
   flex-shrink: 0;
   width: 36px;
   height: 36px;
