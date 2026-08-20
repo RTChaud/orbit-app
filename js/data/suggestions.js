@@ -51,14 +51,14 @@ const OrbitSuggestions = (() => {
     );
   }
 
-  // Up to 6 matches for the autocomplete dropdown, alphabetical.
+  // Every match, alphabetical - all of them on an empty query (so
+  // tapping into the field shows everything right away), narrowed as
+  // you type. Capped at 8 so the dropdown doesn't get unwieldy.
   function search(kind, query) {
     const q = query.trim().toLowerCase();
-    if (!q) return [];
-    return getAll(kind)
-      .filter((s) => s.name.toLowerCase().includes(q))
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .slice(0, 6);
+    const all = sortedAll(kind);
+    const matches = q ? all.filter((s) => s.name.toLowerCase().includes(q)) : all;
+    return matches.slice(0, 8);
   }
 
   // Full alphabetical list, for the "previously used" management section.
