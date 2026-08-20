@@ -73,6 +73,8 @@ const OrbitShoppingModule = (() => {
     nameInput.required = true;
     nameInput.maxLength = 80;
 
+    form.appendChild(OrbitUI.buildField("Item name", nameInput));
+
     OrbitUI.wireAutocomplete(
       nameInput,
       (query) => OrbitSuggestions.search("shopping", query),
@@ -95,7 +97,6 @@ const OrbitShoppingModule = (() => {
     actions.appendChild(cancelBtn);
     actions.appendChild(saveBtn);
 
-    form.appendChild(OrbitUI.buildField("Item name", nameInput));
     form.appendChild(actions);
 
     form.addEventListener("submit", (event) => {

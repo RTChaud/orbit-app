@@ -89,6 +89,9 @@ const OrbitSoonModule = (() => {
     durationInput.value = "00:00";
     durationInput.required = true;
 
+    const nameField = OrbitUI.buildField("Task name", nameInput);
+    form.appendChild(nameField);
+
     OrbitUI.wireAutocomplete(
       nameInput,
       (query) => OrbitSuggestions.search("soon", query),
@@ -138,7 +141,6 @@ const OrbitSoonModule = (() => {
     actions.appendChild(cancelBtn);
     actions.appendChild(saveBtn);
 
-    form.appendChild(OrbitUI.buildField("Task name", nameInput));
     form.appendChild(presetRow);
     form.appendChild(OrbitUI.buildField("Duration", durationInput));
     form.appendChild(error);
