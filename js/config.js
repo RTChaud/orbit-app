@@ -10,4 +10,4 @@ const ORBIT_CONFIG = {
   serverUrl: "https://orbit-worker.romain-96d.workers.dev",
 };
 
-const ORBIT_APP_VERSION = "24";
+const ORBIT_APP_VERSION = "25";

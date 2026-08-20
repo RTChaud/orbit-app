@@ -247,6 +247,15 @@ const OrbitUI = (() => {
     });
   }
 
+  // Brief, auto-dismissing confirmation - e.g. "Timer started for X".
+  function showToast(message) {
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2200);
+  }
+
   return {
     el,
     showBanner,
@@ -259,5 +268,6 @@ const OrbitUI = (() => {
     buildEmptyHint,
     buildField,
     wireAutocomplete,
+    showToast,
   };
 })();

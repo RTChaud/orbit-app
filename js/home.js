@@ -16,6 +16,7 @@ const OrbitHome = (() => {
     { route: "lists", label: "Lists", icon: "lists" },
     { route: "calendar", label: "Calendar", icon: "calendar" },
     { route: "waiting", label: "Waiting", icon: "waiting" },
+    { route: "cooking", label: "Cooking", icon: "cooking" },
   ];
 
   function render(root, header) {
