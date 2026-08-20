@@ -8,7 +8,7 @@
 
 const OrbitShoppingModule = (() => {
   function render(root, header) {
-    OrbitUI.renderModuleHeader(header, "Shopping", openAddForm);
+    OrbitUI.renderModuleHeader(header, "Shopping", openAddForm, openSuggestionsModal);
 
     const list = OrbitShopping.getDefaultList();
     const listEl = document.createElement("div");
@@ -37,31 +37,29 @@ const OrbitShoppingModule = (() => {
     }
 
     root.appendChild(listEl);
-    renderSuggestionsSection(root);
   }
 
-  function renderSuggestionsSection(root) {
+  function openSuggestionsModal() {
+    const wrap = document.createElement("div");
+    wrap.className = "item-list";
+
     const suggestions = OrbitSuggestions.sortedAll("shopping");
-    if (suggestions.length === 0) return;
-
-    const heading = document.createElement("h2");
-    heading.className = "section-label";
-    heading.textContent = "Previously used";
-    root.appendChild(heading);
-
-    const list = document.createElement("div");
-    list.className = "item-list";
-    suggestions.forEach((s) => {
-      const row = OrbitUI.buildItemRow({
-        name: s.name,
-        onDelete: () => {
-          OrbitSuggestions.remove("shopping", s.name);
-          OrbitRouter.renderCurrent();
-        },
+    if (suggestions.length === 0) {
+      wrap.appendChild(OrbitUI.buildEmptyHint("No previously used items yet."));
+    } else {
+      suggestions.forEach((s) => {
+        const row = OrbitUI.buildItemRow({
+          name: s.name,
+          onDelete: () => {
+            OrbitSuggestions.remove("shopping", s.name);
+            openSuggestionsModal();
+          },
+        });
+        wrap.appendChild(row);
       });
-      list.appendChild(row);
-    });
-    root.appendChild(list);
+    }
+
+    OrbitUI.openModal("Previously used", wrap);
   }
 
   function openAddForm() {

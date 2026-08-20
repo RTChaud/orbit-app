@@ -14,7 +14,7 @@
 
 const OrbitSoonModule = (() => {
   function render(root, header) {
-    OrbitUI.renderModuleHeader(header, "Soon", openAddForm);
+    OrbitUI.renderModuleHeader(header, "Soon", openAddForm, openSuggestionsModal);
 
     const items = OrbitItems.getSoonItems();
     const list = document.createElement("div");
@@ -46,35 +46,33 @@ const OrbitSoonModule = (() => {
     }
 
     root.appendChild(list);
-    renderSuggestionsSection(root);
   }
 
-  function renderSuggestionsSection(root) {
+  function openSuggestionsModal() {
+    const wrap = document.createElement("div");
+    wrap.className = "item-list";
+
     const suggestions = OrbitSuggestions.sortedAll("soon");
-    if (suggestions.length === 0) return;
-
-    const heading = document.createElement("h2");
-    heading.className = "section-label";
-    heading.textContent = "Previously used";
-    root.appendChild(heading);
-
-    const list = document.createElement("div");
-    list.className = "item-list";
-    suggestions.forEach((s) => {
-      const row = OrbitUI.buildItemRow({
-        name: s.name,
-        subtext:
-          typeof s.durationMinutes === "number"
-            ? `Usually ${OrbitUtils.formatMinutesDuration(s.durationMinutes)}`
-            : undefined,
-        onDelete: () => {
-          OrbitSuggestions.remove("soon", s.name);
-          OrbitRouter.renderCurrent();
-        },
+    if (suggestions.length === 0) {
+      wrap.appendChild(OrbitUI.buildEmptyHint("No previously used tasks yet."));
+    } else {
+      suggestions.forEach((s) => {
+        const row = OrbitUI.buildItemRow({
+          name: s.name,
+          subtext:
+            typeof s.durationMinutes === "number"
+              ? `Usually ${OrbitUtils.formatMinutesDuration(s.durationMinutes)}`
+              : undefined,
+          onDelete: () => {
+            OrbitSuggestions.remove("soon", s.name);
+            openSuggestionsModal();
+          },
+        });
+        wrap.appendChild(row);
       });
-      list.appendChild(row);
-    });
-    root.appendChild(list);
+    }
+
+    OrbitUI.openModal("Previously used", wrap);
   }
 
   function openAddForm() {
