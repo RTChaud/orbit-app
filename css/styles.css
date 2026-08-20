@@ -491,6 +491,13 @@ input, textarea, select {
   width: 100%;
 }
 
+input[type="date"],
+input[type="time"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+}
+
 input:focus, textarea:focus, select:focus {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
