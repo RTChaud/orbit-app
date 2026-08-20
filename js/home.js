@@ -31,11 +31,11 @@ const OrbitHome = (() => {
       const iconSlot = document.createElement("span");
       iconSlot.className = "tile-icon-slot";
 
-      // Each module can have its own logo later: icons/<route>.png. If it
+      // Each module can have its own logo later: icons/<route>.webp. If it
       // doesn't exist yet, this quietly falls back to the line icon -
       // adding a logo later is just dropping the file in, no code change.
       const img = document.createElement("img");
-      img.src = `icons/${tile.route}.png`;
+      img.src = `icons/${tile.route}.webp`;
       img.alt = "";
       img.className = "tile-icon-img";
       img.addEventListener("error", () => {
