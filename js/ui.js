@@ -116,9 +116,19 @@ const OrbitUI = (() => {
     settingsBtn.innerHTML = OrbitIcons.get("settings");
     settingsBtn.addEventListener("click", onSettings);
 
+    const settingsWrap = document.createElement("div");
+    settingsWrap.className = "header-settings-wrap";
+
+    const versionLabel = document.createElement("p");
+    versionLabel.className = "version-label";
+    versionLabel.textContent = `v${ORBIT_APP_VERSION}`;
+
+    settingsWrap.appendChild(settingsBtn);
+    settingsWrap.appendChild(versionLabel);
+
     row.appendChild(spacer);
     row.appendChild(titles);
-    row.appendChild(settingsBtn);
+    row.appendChild(settingsWrap);
     headerEl.appendChild(row);
   }
 
