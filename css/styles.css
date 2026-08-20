@@ -466,6 +466,7 @@ body {
   flex-direction: column;
   gap: 6px;
   flex: 1;
+  min-width: 0;
 }
 
 .field-label {
