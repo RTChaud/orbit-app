@@ -12,7 +12,7 @@
  * right time. See README.md.
  */
 
-const CACHE_NAME = "orbit-shell-v15";
+const CACHE_NAME = "orbit-shell-v16";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -26,9 +26,11 @@ const APP_SHELL = [
   "./js/data/items.js",
   "./js/data/shopping.js",
   "./js/data/lists.js",
+  "./js/data/backup.js",
   "./js/reminders.js",
   "./js/router.js",
   "./js/ui.js",
+  "./js/settings.js",
   "./js/home.js",
   "./js/modules/soon.js",
   "./js/modules/upcoming.js",
