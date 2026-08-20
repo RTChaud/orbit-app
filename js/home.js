@@ -19,7 +19,7 @@ const OrbitHome = (() => {
   ];
 
   function render(root, header) {
-    OrbitUI.renderHomeHeader(header);
+    OrbitUI.renderHomeHeader(header, OrbitSettings.openBackupModal);
 
     const grid = document.createElement("div");
     grid.className = "home-grid";

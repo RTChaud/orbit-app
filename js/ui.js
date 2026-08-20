@@ -84,13 +84,33 @@ const OrbitUI = (() => {
     }
   }
 
-  function renderHomeHeader(headerEl) {
+  function renderHomeHeader(headerEl, onSettings) {
     headerEl.innerHTML = "";
     headerEl.className = "app-header home-header";
-    headerEl.innerHTML = `
+
+    const row = document.createElement("div");
+    row.className = "home-header-row";
+
+    const spacer = document.createElement("div");
+    spacer.className = "header-spacer";
+
+    const titles = document.createElement("div");
+    titles.className = "home-header-titles";
+    titles.innerHTML = `
       <h1 class="app-title">Orbit</h1>
       <p class="app-subtitle">Keep life neatly in orbit</p>
     `;
+
+    const settingsBtn = document.createElement("button");
+    settingsBtn.className = "icon-btn header-settings";
+    settingsBtn.setAttribute("aria-label", "Settings");
+    settingsBtn.innerHTML = OrbitIcons.get("settings");
+    settingsBtn.addEventListener("click", onSettings);
+
+    row.appendChild(spacer);
+    row.appendChild(titles);
+    row.appendChild(settingsBtn);
+    headerEl.appendChild(row);
   }
 
   // Standard row: checkbox, name, optional subtext, delete button.

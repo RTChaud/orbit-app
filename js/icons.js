@@ -26,6 +26,7 @@ const OrbitIcons = (() => {
     trash: `<svg viewBox="0 0 24 24" ${stroke}><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/></svg>`,
     checkOn: `<svg viewBox="0 0 24 24" ${stroke}><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="currentColor" stroke="none"/><path d="M8 12l2.5 2.5L16 9" stroke="#12141c"/></svg>`,
     checkOff: `<svg viewBox="0 0 24 24" ${stroke}><rect x="3.5" y="3.5" width="17" height="17" rx="5"/></svg>`,
+    settings: `<svg viewBox="0 0 24 24" ${stroke}><line x1="4" y1="6" x2="20" y2="6"/><circle cx="15" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="17" cy="18" r="2" fill="currentColor" stroke="none"/></svg>`,
   };
 
   function get(name) {
