@@ -1,5 +1,9 @@
 /**
  * modules/shopping.js
+ *
+ * Also remembers item names typed here as suggestions (see
+ * js/data/suggestions.js), so "milk" autocompletes next time - no
+ * duration involved, just the name.
  */
 
 const OrbitShoppingModule = (() => {
@@ -33,6 +37,31 @@ const OrbitShoppingModule = (() => {
     }
 
     root.appendChild(listEl);
+    renderSuggestionsSection(root);
+  }
+
+  function renderSuggestionsSection(root) {
+    const suggestions = OrbitSuggestions.sortedAll("shopping");
+    if (suggestions.length === 0) return;
+
+    const heading = document.createElement("h2");
+    heading.className = "section-label";
+    heading.textContent = "Previously used";
+    root.appendChild(heading);
+
+    const list = document.createElement("div");
+    list.className = "item-list";
+    suggestions.forEach((s) => {
+      const row = OrbitUI.buildItemRow({
+        name: s.name,
+        onDelete: () => {
+          OrbitSuggestions.remove("shopping", s.name);
+          OrbitRouter.renderCurrent();
+        },
+      });
+      list.appendChild(row);
+    });
+    root.appendChild(list);
   }
 
   function openAddForm() {
@@ -45,6 +74,14 @@ const OrbitShoppingModule = (() => {
     nameInput.type = "text";
     nameInput.required = true;
     nameInput.maxLength = 80;
+
+    OrbitUI.wireAutocomplete(
+      nameInput,
+      (query) => OrbitSuggestions.search("shopping", query),
+      (match) => {
+        nameInput.value = match.name;
+      }
+    );
 
     const actions = document.createElement("div");
     actions.className = "modal-actions";
@@ -68,6 +105,7 @@ const OrbitShoppingModule = (() => {
       const name = nameInput.value.trim();
       if (!name) return;
       OrbitShopping.addItem(list.id, name);
+      OrbitSuggestions.upsertShopping(name);
       OrbitUI.closeModal();
       OrbitRouter.renderCurrent();
     });

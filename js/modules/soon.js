@@ -6,6 +6,10 @@
  *  2. A read-only view of ANY item (Upcoming, Routine, Waiting, Task with
  *     a deadline) that has come within 24 hours of its due time - these
  *     are never copied, just filtered in from OrbitItems.getSoonItems().
+ *
+ * It also remembers names typed here (with the duration used) as
+ * suggestions - see js/data/suggestions.js - so "washing machine" can
+ * autocomplete and refill "1h 14m" next time.
  */
 
 const OrbitSoonModule = (() => {
@@ -42,6 +46,35 @@ const OrbitSoonModule = (() => {
     }
 
     root.appendChild(list);
+    renderSuggestionsSection(root);
+  }
+
+  function renderSuggestionsSection(root) {
+    const suggestions = OrbitSuggestions.sortedAll("soon");
+    if (suggestions.length === 0) return;
+
+    const heading = document.createElement("h2");
+    heading.className = "section-label";
+    heading.textContent = "Previously used";
+    root.appendChild(heading);
+
+    const list = document.createElement("div");
+    list.className = "item-list";
+    suggestions.forEach((s) => {
+      const row = OrbitUI.buildItemRow({
+        name: s.name,
+        subtext:
+          typeof s.durationMinutes === "number"
+            ? `Usually ${OrbitUtils.formatMinutesDuration(s.durationMinutes)}`
+            : undefined,
+        onDelete: () => {
+          OrbitSuggestions.remove("soon", s.name);
+          OrbitRouter.renderCurrent();
+        },
+      });
+      list.appendChild(row);
+    });
+    root.appendChild(list);
   }
 
   function openAddForm() {
@@ -57,6 +90,19 @@ const OrbitSoonModule = (() => {
     durationInput.type = "time";
     durationInput.value = "00:00";
     durationInput.required = true;
+
+    OrbitUI.wireAutocomplete(
+      nameInput,
+      (query) => OrbitSuggestions.search("soon", query),
+      (match) => {
+        nameInput.value = match.name;
+        if (typeof match.durationMinutes === "number") {
+          const hours = Math.floor(match.durationMinutes / 60);
+          const minutes = match.durationMinutes % 60;
+          durationInput.value = `${OrbitUtils.pad(hours)}:${OrbitUtils.pad(minutes)}`;
+        }
+      }
+    );
 
     const presetRow = document.createElement("div");
     presetRow.className = "preset-row";
@@ -116,9 +162,11 @@ const OrbitSoonModule = (() => {
         return;
       }
 
-      const dueAt = Date.now() + (hours * 60 + minutes) * 60 * 1000;
+      const totalMinutes = hours * 60 + minutes;
+      const dueAt = Date.now() + totalMinutes * 60 * 1000;
       const item = OrbitItems.create({ type: "soon", name, dueAt, hasTime: true });
       OrbitReminders.scheduleItem(item);
+      OrbitSuggestions.upsertSoon(name, totalMinutes);
 
       OrbitUI.closeModal();
       OrbitRouter.renderCurrent();
