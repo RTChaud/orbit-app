@@ -15,10 +15,19 @@
  *   hasTime,               // whether dueAt includes a meaningful time of day
  *   completed, completedAt,
  *   notified,               // local (foreground) notification already fired
- *   recurrence,              // { unit: 'day'|'week'|'month', interval } - routines only
- *   lastCompletedAt,          // routines only
  *   createdAt,
  * }
+ *
+ * A Routine is the same item, plus (all managed by data/routines.js):
+ *   rule        the recurrence (see data/recurrence.js) incl. the original anchor
+ *   k           index of the one pending occurrence
+ *   scheduledAt when that occurrence is scheduled; dueAt is when it is
+ *               actually due (they differ only if it was snoozed)
+ *   paused, history, lastCompletedAt, rev
+ * dueAt is always the pending occurrence, so a routine appears in Soon,
+ * Upcoming and Calendar exactly like any other dated item - no copies.
+ * (Routines created before this version have `recurrence` instead of
+ * `rule`; data/routines.js upgrades them in place the first time they load.)
  */
 
 const OrbitItems = (() => {
@@ -61,38 +70,40 @@ const OrbitItems = (() => {
   }
 
   function remove(id) {
+    const item = get(id);
     saveAll(getAll().filter((i) => i.id !== id));
+    // A routine also lives on the Worker (that's what lets it keep
+    // notifying while Orbit is closed) - deleting it must remove it there.
+    if (item && item.type === "routine" && typeof OrbitReminders !== "undefined") {
+      OrbitReminders.deleteRoutine(id);
+    }
   }
 
-  // Moves a routine to its next occurrence rather than marking it
-  // permanently done - completing a Routine completes this occurrence.
-  function advanceRecurrence(dueAt, recurrence) {
-    const next = new Date(dueAt);
-    const { unit, interval } = recurrence;
-    if (unit === "day") next.setDate(next.getDate() + interval);
-    else if (unit === "week") next.setDate(next.getDate() + interval * 7);
-    else if (unit === "month") next.setMonth(next.getMonth() + interval);
-    return next.getTime();
-  }
-
+  // Completing a Routine completes its current occurrence and schedules
+  // the next one - it is never marked permanently done.
   function complete(id) {
     const item = get(id);
     if (!item) return null;
 
-    if (item.type === "routine" && item.recurrence && typeof item.dueAt === "number") {
-      const nextDueAt = advanceRecurrence(item.dueAt, item.recurrence);
-      return update(id, { dueAt: nextDueAt, lastCompletedAt: Date.now(), notified: false });
-    }
+    if (item.type === "routine") return OrbitRoutines.complete(id);
 
     return update(id, { completed: true, completedAt: Date.now() });
   }
 
   // --- Views ---
 
+  // Paused routines keep their data but generate nothing visible.
+  function isActive(item) {
+    return !item.completed && !item.paused && typeof item.dueAt === "number";
+  }
+
+  // Anything due within the configurable Soon window (Settings, default
+  // 24h) - including anything already overdue. Items created directly in
+  // Soon are always shown, whatever the window.
   function getSoonItems() {
-    const cutoff = Date.now() + DAY_MS;
+    const cutoff = Date.now() + OrbitPrefs.getSoonWindowMs();
     return getAll()
-      .filter((i) => !i.completed && typeof i.dueAt === "number" && i.dueAt <= cutoff)
+      .filter((i) => isActive(i) && (i.type === "soon" || i.dueAt <= cutoff))
       .sort((a, b) => a.dueAt - b.dueAt);
   }
 
@@ -100,17 +111,19 @@ const OrbitItems = (() => {
     return getAll()
       .filter(
         (i) =>
-          !i.completed &&
-          (i.type === "upcoming" || i.type === "task") &&
-          typeof i.dueAt === "number"
+          isActive(i) && (i.type === "upcoming" || i.type === "task" || i.type === "routine")
       )
       .sort((a, b) => a.dueAt - b.dueAt);
   }
 
+  // Active routines by next due; paused ones sink to the bottom.
   function getRoutines() {
     return getAll()
       .filter((i) => i.type === "routine")
-      .sort((a, b) => (a.dueAt || 0) - (b.dueAt || 0));
+      .sort((a, b) => {
+        if (Boolean(a.paused) !== Boolean(b.paused)) return a.paused ? 1 : -1;
+        return (a.dueAt || 0) - (b.dueAt || 0);
+      });
   }
 
   function getOpenTasks() {
@@ -133,7 +146,7 @@ const OrbitItems = (() => {
   // All dated items falling within [startMs, endMs) - used by Calendar.
   function getItemsInRange(startMs, endMs) {
     return getAll()
-      .filter((i) => !i.completed && typeof i.dueAt === "number" && i.dueAt >= startMs && i.dueAt < endMs)
+      .filter((i) => isActive(i) && i.dueAt >= startMs && i.dueAt < endMs)
       .sort((a, b) => a.dueAt - b.dueAt);
   }
 
