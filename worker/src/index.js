@@ -225,7 +225,7 @@ async function sendDueReminders(env) {
         message: {
           payload: {
             title: reminder.name,
-            body: reminder.description || "Reminder from Orbit",
+            body: reminder.description || "Reminder",
             tag: reminder.id,
           },
           adminContact: env.VAPID_SUBJECT,
@@ -324,7 +324,7 @@ async function processRoutine(env, privateJWK, row, now) {
       message: {
         payload: {
           title: row.name,
-          body: row.description || "Reminder from Orbit",
+          body: row.description || "Reminder",
           // One tag per routine: a newer notification replaces the
           // previous one instead of piling up beside it.
           tag: row.id,
