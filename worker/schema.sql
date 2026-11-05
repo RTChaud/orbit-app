@@ -17,3 +17,22 @@ CREATE TABLE IF NOT EXISTS reminders (
 );
 
 CREATE INDEX IF NOT EXISTS reminders_due_at_idx ON reminders (due_at);
+
+-- Routines (added in migration 0002 - see migrations/0002_routines.sql).
+-- Kept here too so a brand-new database gets everything in one go.
+CREATE TABLE IF NOT EXISTS routines (
+  id           TEXT PRIMARY KEY,
+  name         TEXT NOT NULL,
+  description  TEXT,
+  rule         TEXT NOT NULL,
+  k            INTEGER NOT NULL,
+  due_at       INTEGER NOT NULL,
+  paused       INTEGER NOT NULL DEFAULT 0,
+  rev          INTEGER NOT NULL,
+  last_fired   TEXT,
+  subscription TEXT NOT NULL,
+  created_at   INTEGER NOT NULL,
+  updated_at   INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS routines_due_idx ON routines (paused, due_at);

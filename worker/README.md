@@ -109,8 +109,46 @@ picked.
   rare failure case a reminder arrives a minute late rather than never.
 - **Free plan limits are generous here.** Running every minute uses about
   1,440 of your 100,000 daily requests.
-- **Reminders are deleted once sent.** The table only ever holds pending
-  reminders, so it stays tiny.
+- **Reminders are deleted once sent.** The `reminders` table only ever holds
+  pending reminders, so it stays tiny. (Routines live in their own table and
+  are kept, since they repeat.)
+
+## Routines (added in Orbit v29)
+
+Routines are handled differently from one-off reminders. A reminder is a
+single row that is deleted once sent. A routine is a *schedule*: the Worker
+keeps its recurrence rule and, each time an occurrence comes due, sends the
+notification **and moves itself on to the next occurrence** - so routines
+keep notifying when Orbit is never opened.
+
+- **One extra table**, `routines`. Create it once with
+  `migrations/0002_routines.sql` (additive only - it doesn't touch
+  `reminders` or any existing data, and is safe to run twice). In the
+  Cloudflare dashboard: Storage & Databases -> D1 -> `orbit-db` -> Console,
+  paste the file's contents, Execute. Until you do, ordinary reminders carry
+  on working and routines simply aren't tracked on the Worker.
+- **New endpoints:** `POST /api/routines` (create/update) and
+  `DELETE /api/routines/:id`.
+- **No duplicates, by design.** The app stamps every change with a `rev`;
+  the Worker only accepts a state with a higher `rev`, and records which
+  occurrence it last notified (`last_fired`). Re-sending the same state
+  (which the app does each time it opens) changes nothing. The cron claims
+  each due routine with a compare-and-set before sending, so overlapping
+  runs can't send twice.
+- **No backlog.** If the Worker was down for a while, it doesn't replay
+  missed occurrences: it jumps to the latest one that is due, and a
+  notification more than 6 hours late is skipped rather than sent.
+- **`recurrence.js` must match the app's.** `src/recurrence.js` is
+  `js/data/recurrence.js` from the app with only its last line changed (the
+  Node line becomes `export default OrbitRecurrence;`). Both sides use it to
+  work out occurrence dates (including month ends, "last Sunday" and clock
+  changes), so if you ever edit one, make the same edit in the other.
+
+Check what the Worker is tracking:
+
+```bash
+npx wrangler d1 execute orbit-db --remote --command "SELECT id, name, k, datetime(due_at/1000,'unixepoch') AS due_utc, paused FROM routines"
+```
 
 ## Useful commands
 
