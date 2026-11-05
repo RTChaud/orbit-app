@@ -11,10 +11,12 @@
   let swRegistration = null;
   let pushSubscription = null;
 
-  // Exposes the current push subscription to reminders.js without a
-  // circular dependency between the two files.
+  // Exposes the current push subscription (and the registration needed
+  // to establish one on-demand) to reminders.js, without a circular
+  // dependency between the two files.
   window.OrbitRuntime = {
     getPushSubscription: () => pushSubscription,
+    getServiceWorkerRegistration: () => swRegistration,
   };
 
   function isStandalone() {

@@ -18,14 +18,28 @@ const OrbitReminders = (() => {
     };
   }
 
-  function scheduleItem(item) {
+  async function scheduleItem(item) {
     if (!item || item.completed || typeof item.dueAt !== "number") return;
     if (OrbitNotifications.getPermission() !== "granted") return;
 
     const payload = toReminderPayload(item);
     OrbitNotifications.schedule(payload);
 
-    const subscription = window.OrbitRuntime && window.OrbitRuntime.getPushSubscription();
+    let subscription = window.OrbitRuntime && window.OrbitRuntime.getPushSubscription();
+
+    // The cached subscription can still be null this early - getting one
+    // needs a network round-trip (fetching the worker's VAPID key) that
+    // runs in the background on app load. Without this, a task created
+    // quickly after opening Orbit would silently never get saved to the
+    // worker at all - it'd still look fine in the app, just with nothing
+    // backing it beyond the local, foreground-only timer.
+    if (!subscription && OrbitPush.isConfigured()) {
+      const registration = window.OrbitRuntime && window.OrbitRuntime.getServiceWorkerRegistration();
+      if (registration) {
+        subscription = await OrbitPush.ensureSubscription(registration);
+      }
+    }
+
     OrbitPush.saveReminder(payload, subscription);
   }
 
