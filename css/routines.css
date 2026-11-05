@@ -1,0 +1,300 @@
+/*
+ * routines.css
+ *
+ * Styles for the Routines module only (the add form, the list rows and the
+ * routine screen). Loaded after styles.css and built on its colour
+ * variables, so it follows the same theme.
+ */
+
+/* ---------- Add routine form ---------- */
+
+.routine-form [hidden] {
+  display: none !important;
+}
+
+.routine-form {
+  gap: 12px;
+}
+
+/* "Repeat every [ 2 ] weeks" */
+.repeat-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.repeat-control input {
+  width: 64px;
+  flex: none;
+  text-align: center;
+  height: 44px;
+  -webkit-appearance: none;
+  appearance: none;
+  -moz-appearance: textfield;
+}
+
+.repeat-unit {
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.field select {
+  height: 44px;
+  min-width: 0;
+}
+
+/* Repeat on: two mutually exclusive options */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radio-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 12px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.radio-row.is-selected {
+  border-color: var(--accent);
+}
+
+/* Custom radio so "unselected" can't be mistaken for "selected" */
+.radio-row input[type="radio"] {
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 2px solid var(--text-muted);
+  border-radius: 50%;
+}
+
+.radio-row input[type="radio"]:checked {
+  border-color: var(--accent);
+}
+
+.radio-row input[type="radio"]:checked::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.radio-controls {
+  display: flex;
+  gap: 10px;
+  margin: -2px 0 2px;
+}
+
+.radio-controls select {
+  flex: 1;
+}
+
+/* The live "Every 2 weeks on Sunday at 19:00" line - deliberately quiet */
+.routine-preview {
+  margin: 2px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.routine-preview-first {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* ---------- Routines list ---------- */
+
+.item-row-subtext.routine-next {
+  margin-top: 2px;
+}
+
+.item-row-subtext.is-overdue {
+  color: var(--danger);
+}
+
+.item-row-subtext.is-paused {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.item-row.is-paused .item-row-name {
+  color: var(--text-muted);
+}
+
+/* ---------- Routine screen ---------- */
+
+.routine-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.routine-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.routine-cadence {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.routine-description {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.routine-next-line {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+}
+
+.routine-next-line.is-overdue {
+  color: var(--danger);
+}
+
+.routine-next-line.is-paused {
+  color: var(--text-muted);
+}
+
+.routine-note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 6px;
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.routine-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.routine-actions .btn {
+  flex: 1;
+  padding: 11px 8px;
+}
+
+.btn-danger-text {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--danger);
+}
+
+.snooze-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.snooze-panel[hidden],
+.snooze-custom[hidden] {
+  display: none;
+}
+
+.snooze-custom {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.routine-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.92rem;
+}
+
+.routine-summary p {
+  margin: 0;
+}
+
+.routine-summary .label {
+  color: var(--text-muted);
+}
+
+.history-title {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.92rem;
+}
+
+.history-row:last-child {
+  border-bottom: none;
+}
+
+.history-status {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  text-align: right;
+}
+
+.history-status.is-completed {
+  color: var(--success);
+}
+
+.history-status.is-overdue {
+  color: var(--danger);
+}
+
+.history-status.is-pending {
+  color: var(--accent);
+}
