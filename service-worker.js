@@ -12,18 +12,22 @@
  * right time. See README.md.
  */
 
-const CACHE_NAME = "orbit-shell-v28";
+const CACHE_NAME = "orbit-shell-v29";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./css/styles.css",
+  "./css/routines.css",
   "./js/config.js",
   "./js/storage.js",
   "./js/icons.js",
   "./js/utils.js",
   "./js/notifications.js",
   "./js/push.js",
+  "./js/data/recurrence.js",
+  "./js/data/prefs.js",
   "./js/data/items.js",
+  "./js/data/routines.js",
   "./js/data/shopping.js",
   "./js/data/lists.js",
   "./js/data/backup.js",
@@ -36,6 +40,7 @@ const APP_SHELL = [
   "./js/home.js",
   "./js/modules/soon.js",
   "./js/modules/upcoming.js",
+  "./js/modules/routines-form.js",
   "./js/modules/routines.js",
   "./js/modules/tasks.js",
   "./js/modules/shopping.js",
