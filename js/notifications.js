@@ -44,7 +44,7 @@ const OrbitNotifications = (() => {
   async function fireNotification(task) {
     const title = task.name;
     const options = {
-      body: task.description ? task.description : "Reminder from Orbit",
+      body: task.description ? task.description : "Reminder",
       icon: "icons/logo.png",
       badge: "icons/logo.png",
       tag: task.id,
