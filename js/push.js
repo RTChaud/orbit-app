@@ -72,6 +72,46 @@ const OrbitPush = (() => {
     }
   }
 
+  // A routine's whole schedule lives on the Worker, so it can keep
+  // notifying (and move on to the next occurrence) while Orbit is closed.
+  // The Worker keeps whichever copy has the higher `rev`, which makes
+  // repeating this call harmless.
+  async function saveRoutine(routine, subscription) {
+    if (!isConfigured() || !subscription) return;
+
+    try {
+      await fetch(`${ORBIT_CONFIG.serverUrl}/api/routines`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: routine.id,
+          name: routine.name,
+          description: routine.description,
+          rule: routine.rule,
+          k: routine.k,
+          dueAt: routine.dueAt,
+          paused: Boolean(routine.paused),
+          rev: routine.rev,
+          subscription,
+        }),
+      });
+    } catch (err) {
+      console.warn("Orbit: failed to save routine on server", err);
+    }
+  }
+
+  async function cancelRoutine(routineId) {
+    if (!isConfigured()) return;
+
+    try {
+      await fetch(`${ORBIT_CONFIG.serverUrl}/api/routines/${encodeURIComponent(routineId)}`, {
+        method: "DELETE",
+      });
+    } catch (err) {
+      console.warn("Orbit: failed to delete routine on server", err);
+    }
+  }
+
   async function cancelReminder(taskId) {
     if (!isConfigured()) return;
 
@@ -89,5 +129,7 @@ const OrbitPush = (() => {
     ensureSubscription,
     saveReminder,
     cancelReminder,
+    saveRoutine,
+    cancelRoutine,
   };
 })();

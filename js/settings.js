@@ -1,14 +1,28 @@
 /**
  * settings.js
  *
- * Small utility screen (a modal, not a full route) for backing up and
- * restoring Orbit's data - opened from a gear icon on the home header.
+ * Small utility screen (a modal, not a full route): the Soon window, and
+ * backing up and restoring Orbit's data - opened from a gear icon on the home header.
  */
 
 const OrbitSettings = (() => {
   function openBackupModal() {
     const wrap = document.createElement("div");
     wrap.className = "form";
+
+    // How far ahead of its due time something shows up in Soon.
+    const windowSelect = document.createElement("select");
+    OrbitPrefs.SOON_HOUR_CHOICES.forEach((hours) => {
+      const opt = document.createElement("option");
+      opt.value = String(hours);
+      opt.textContent = OrbitPrefs.describeHours(hours);
+      windowSelect.appendChild(opt);
+    });
+    windowSelect.value = String(OrbitPrefs.getSoonWindowHours());
+    windowSelect.addEventListener("change", () => {
+      OrbitPrefs.setSoonWindowHours(windowSelect.value);
+    });
+    wrap.appendChild(OrbitUI.buildField("Soon window", windowSelect));
 
     const exportBtn = document.createElement("button");
     exportBtn.type = "button";
