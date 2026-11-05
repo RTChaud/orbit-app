@@ -12,7 +12,7 @@
  * right time. See README.md.
  */
 
-const CACHE_NAME = "orbit-shell-v29";
+const CACHE_NAME = "orbit-shell-v30";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -116,9 +116,9 @@ self.addEventListener("push", (event) => {
     data = {};
   }
 
-  const title = data.title || "Orbit";
+  const title = data.title || "Reminder";
   const options = {
-    body: data.body || "Reminder from Orbit",
+    body: data.body || "Reminder",
     icon: "icons/logo.png",
     badge: "icons/logo.png",
     tag: data.tag || "orbit-reminder",
