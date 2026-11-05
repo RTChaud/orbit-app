@@ -4,7 +4,8 @@
  * Soon has two roles:
  *  1. Its own fast "due in X" creation flow (type: 'soon').
  *  2. A read-only view of ANY item (Upcoming, Routine, Waiting, Task with
- *     a deadline) that has come within 24 hours of its due time - these
+ *     a deadline) that has come within the Soon window (Settings, 24h
+ *     by default) of its due time - these
  *     are never copied, just filtered in from OrbitItems.getSoonItems().
  *
  * It also remembers names typed here (with the duration used) as
@@ -21,26 +22,41 @@ const OrbitSoonModule = (() => {
     list.className = "item-list";
 
     if (items.length === 0) {
-      list.appendChild(OrbitUI.buildEmptyHint("Nothing due in the next 24 hours."));
+      const windowText = OrbitPrefs.describeHours(OrbitPrefs.getSoonWindowHours());
+      list.appendChild(OrbitUI.buildEmptyHint(`Nothing due in the next ${windowText}.`));
     } else {
       items.forEach((item) => {
+        const isRoutine = item.type === "routine";
         const remaining = item.dueAt - Date.now();
         const row = OrbitUI.buildItemRow({
           name: item.name,
-          subtext: OrbitUtils.formatRelativeDuration(remaining),
+          subtext:
+            OrbitUtils.formatRelativeDuration(remaining) + (isRoutine ? " \u00b7 Routine" : ""),
           completed: false,
+          // A routine occurrence is completed like any task (the routine
+          // then moves to its next occurrence); the index makes a repeated
+          // tap harmless. Its other actions - skip, snooze - are one tap
+          // away on the routine's own screen.
           onToggle: () => {
-            OrbitReminders.cancelItem(item.id);
-            OrbitItems.complete(item.id);
-            if (item.type === "routine") OrbitReminders.scheduleItem(OrbitItems.get(item.id));
+            if (isRoutine) {
+              OrbitRoutines.complete(item.id, item.k);
+            } else {
+              OrbitReminders.cancelItem(item.id);
+              OrbitItems.complete(item.id);
+            }
             OrbitRouter.renderCurrent();
           },
-          onDelete: () => {
-            OrbitReminders.cancelItem(item.id);
-            OrbitItems.remove(item.id);
-            OrbitRouter.renderCurrent();
-          },
+          // Deleting from here would delete the whole routine, so routine
+          // occurrences don't offer it.
+          onDelete: isRoutine
+            ? undefined
+            : () => {
+                OrbitReminders.cancelItem(item.id);
+                OrbitItems.remove(item.id);
+                OrbitRouter.renderCurrent();
+              },
         });
+        if (isRoutine) OrbitRoutinesModule.linkRow(row, item.id);
         list.appendChild(row);
       });
     }

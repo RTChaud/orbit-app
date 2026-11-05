@@ -14,21 +14,31 @@ const OrbitUpcomingModule = (() => {
       list.appendChild(OrbitUI.buildEmptyHint("No upcoming tasks."));
     } else {
       items.forEach((item) => {
+        // Routines show their next occurrence here (the same item that
+        // Soon shows once it is inside the Soon window - never a copy).
+        const isRoutine = item.type === "routine";
         const row = OrbitUI.buildItemRow({
           name: item.name,
-          subtext: OrbitUtils.formatDateTime(item),
+          subtext: OrbitUtils.formatDateTime(item) + (isRoutine ? " \u00b7 Routine" : ""),
           completed: false,
           onToggle: () => {
-            OrbitReminders.cancelItem(item.id);
-            OrbitItems.complete(item.id);
+            if (isRoutine) {
+              OrbitRoutines.complete(item.id, item.k);
+            } else {
+              OrbitReminders.cancelItem(item.id);
+              OrbitItems.complete(item.id);
+            }
             OrbitRouter.renderCurrent();
           },
-          onDelete: () => {
-            OrbitReminders.cancelItem(item.id);
-            OrbitItems.remove(item.id);
-            OrbitRouter.renderCurrent();
-          },
+          onDelete: isRoutine
+            ? undefined
+            : () => {
+                OrbitReminders.cancelItem(item.id);
+                OrbitItems.remove(item.id);
+                OrbitRouter.renderCurrent();
+              },
         });
+        if (isRoutine) OrbitRoutinesModule.linkRow(row, item.id);
         list.appendChild(row);
       });
     }
